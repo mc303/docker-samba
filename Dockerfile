@@ -1,28 +1,21 @@
 FROM alpine:3.12.0
 
 RUN apk add --no-cache --update \
+    bash \
     samba-common-tools \
     samba-client \
     samba-server \
     tzdata \
     tini \
-    bash \
     \
     && addgroup -S smb \
-    && adduser -S -D -H -h /tmp -s /sbin/nologin -G smb -g 'Samba User' smbuser
-
+    && adduser -S -D -H -h /tmp -s /sbin/nologin -G smb -g 'Samba User' smbuser \
+    && rm -rf /var/cache/apk/*
 
 COPY samba.sh /usr/bin/
 RUN chmod +x /usr/bin/samba.sh
 
 COPY smb.conf /etc/samba/smb.conf
-
-#EXPOSE 139/tcp 445/tcp
-# COPY config-base/* /config-base/
-# COPY bin/* /usr/local/bin/
-# COPY etc /etc
-
-#CMD ["smbd", "--foreground", "--log-stdout", "--no-process-group"]
 
 EXPOSE 137/udp 138/udp 139 445
 
