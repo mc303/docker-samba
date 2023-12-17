@@ -1,18 +1,23 @@
-#!/bin/sh
-#env DOCKER_BUILDKIT=1 docker build --no-cache -t mc303/samba .
-env DOCKER_BUILDKIT=1
+#!/usr/bin/env bash
 
-BUILDENV=buildsamba
+CONTAINER_NAME="ghcr.io/mc303/samba:latest"
+BUIILDX_REPO='build-samba'
+BUILD_PLATFORM="linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64"
+
+echo ${CONTAINER_NAME}
+echo ${BUIILDX_REPO}
+echo ${BUILD_PLATFORM}
+
+echo "docker buildx build . --platform=${BUILD_PLATFORM} --tag ${CONTAINER_NAME} --push"
 
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-#create platform buildx env
-docker buildx create --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 --name $BUILDENV --driver docker-container
-docker buildx use $BUILDENV
+#create multiplatform environment
+docker buildx create --platform=${BUILD_PLATFORM} --name ${BUIILDX_REPO}
+docker buildx use ${BUIILDX_REPO}
 
-# build platforms
-docker buildx build --platform=linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 -t ghcr.io/mc303/samba --push .
-#docker buildx build --platform=linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 -t ghcr.io/mc303/samba  .
+#build multiplatform docker image
+docker buildx build . --platform=${BUILD_PLATFORM} --tag ${CONTAINER_NAME} --push
 
-# remove build env
-docker buildx rm $BUILDENV
+#remove multiplatform environment
+docker buildx rm ${BUIILDX_REPO}
