@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+### test build
+
 CONTAINER_NAME="ghcr.io/mc303/samba:latest"
 BUIILDX_REPO='build-samba'
 BUILD_PLATFORM="linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64"
